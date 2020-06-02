@@ -1,8 +1,8 @@
 import logging
+from random import randint
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 import settings
-
 
 logging.basicConfig(filename='bot.log', level=logging.INFO)
 
@@ -21,10 +21,35 @@ def talk_to_me(update, context):
     update.message.reply_text(text)
 
 
+def play_random_numbers(user_number):
+    bot_number = randint(user_number-10, user_number+10)
+    if user_number > bot_number:
+        message = f'You made {user_number}, I made {bot_number}, you won!'
+    elif user_number == bot_number:
+        message = f'You made {user_number}, I made {bot_number}, draw!'
+    else:
+        message = f'You made {user_number}, I made {bot_number}, I won!'
+    return message
+
+
+def guess_number(update, context):
+    if context.args:
+        try:
+            user_number = int(context.args[0])
+            message = play_random_numbers(user_number)
+        except (TypeError, ValueError):
+            message = 'Enter an integer'
+    else:
+        message = 'Enter the number'
+    update.message.reply_text(message)
+
+
 def main():
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=PROXY)
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler('start', greet_user))
+    
+    dp.add_handler(CommandHandler('guess', guess_number))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     logging.info('LazyBoy was start')
     mybot.start_polling()
