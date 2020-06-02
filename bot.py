@@ -1,6 +1,8 @@
 from glob import glob
 import logging
 from random import choice, randint
+
+from emoji import emojize
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 import settings
@@ -13,14 +15,21 @@ PROXY = {'proxy_url': settings.PROXY_URL,
 
 def greet_user(update, context):
     print('Start triggered')
-    update.message.reply_text('Hey! You triggered a start')
+    smile = get_smile()
+    update.message.reply_text(f'Hey!{smile}')
 
 
 def talk_to_me(update, context):
+    smile = get_smile()
     text = update.message.text
     print(text)
-    update.message.reply_text(text)
+    update.message.reply_text(f'{text} {smile}')
 
+
+def get_smile():
+    smile = choice(settings.USER_EMOJI)
+    return emojize(smile, use_aliases=True)
+    
 
 def play_random_numbers(user_number):
     bot_number = randint(user_number-10, user_number+10)
