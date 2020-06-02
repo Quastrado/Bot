@@ -1,5 +1,6 @@
+from glob import glob
 import logging
-from random import randint
+from random import choice, randint
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 import settings
@@ -44,12 +45,19 @@ def guess_number(update, context):
     update.message.reply_text(message)
 
 
+def send_picture(update, context):
+    picture_list = glob('images/pic*.jpg')
+    picture = choice(picture_list)
+    chat_id = update.effective_chat.id
+    context.bot.send_photo(chat_id=chat_id, photo=open(picture, 'rb')) 
+
+
 def main():
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=PROXY)
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler('start', greet_user))
-    
     dp.add_handler(CommandHandler('guess', guess_number))
+    dp.add_handler(CommandHandler('pic', send_picture))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     logging.info('LazyBoy was start')
     mybot.start_polling()
