@@ -3,7 +3,7 @@ import logging
 from random import choice, randint
 
 from emoji import emojize
-from telegram import ReplyKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 import settings
@@ -77,7 +77,18 @@ def send_picture(update, context):
 
 
 def main_keyboard():
-    return ReplyKeyboardMarkup([['Image']])
+    return ReplyKeyboardMarkup([
+        ['Image', KeyboardButton('My coordinates', request_location=True)]
+        ])
+
+
+def user_coordinates(update, context):
+    context.user_data['emoji'] = get_smile(context.user_data)
+    coords = update.message.location
+    update.message.reply_text(
+        f'Your coordinates {coords} {context.user_data["emoji"]}!',
+        reply_markup=main_keyboard()
+    )
 
 
 def main():
@@ -87,6 +98,7 @@ def main():
     dp.add_handler(CommandHandler('guess', guess_number))
     dp.add_handler(CommandHandler('pic', send_picture))
     dp.add_handler(MessageHandler(Filters.regex('^(Image)$'), send_picture))
+    dp.add_handler(MessageHandler(Filters.location, user_coordinates))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     logging.info('LazyBoy was start')
     mybot.start_polling()
