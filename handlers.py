@@ -2,7 +2,7 @@ from glob import glob
 import os
 from random import choice
 
-from utils import get_smile, play_random_numbers, main_keyboard
+from utils import get_smile, play_random_numbers, main_keyboard, is_cat
 
 
 def greet_user(update, context):
@@ -65,3 +65,10 @@ def check_user_photo(update, context):
     file_name = os.path.join('downloads', f'{user_photo.file_id}.jpg')
     user_photo.download(file_name)
     update.message.reply_text('Image saved')
+    if is_cat(file_name):
+        update.message.reply_text('Cat detected!')
+        new_filename = os.path.join('images', f'{user_photo.file_id}.jpg')
+        os.rename(file_name, new_filename)
+    else:
+        update.message.reply_text('Cat not found')
+        os.remove(file_name)
