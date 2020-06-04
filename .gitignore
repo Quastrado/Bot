@@ -4,3 +4,4 @@ env/
 __pycache__/
 bot.log
 .vscode/
+README.md

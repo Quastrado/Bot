@@ -1,4 +1,5 @@
 from glob import glob
+import os
 from random import choice
 
 from utils import get_smile, play_random_numbers, main_keyboard
@@ -55,3 +56,12 @@ def user_coordinates(update, context):
         f'Your coordinates {coords} {context.user_data["emoji"]}!',
         reply_markup=main_keyboard()
     )
+
+
+def check_user_photo(update, context):
+    update.message.reply_text('Process image')
+    os.makedirs('downloads', exist_ok=True)
+    user_photo = context.bot.getFile(update.message.photo[-1].file_id)
+    file_name = os.path.join('downloads', f'{user_photo.file_id}.jpg')
+    user_photo.download(file_name)
+    update.message.reply_text('Image saved')
