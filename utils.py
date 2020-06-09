@@ -28,7 +28,7 @@ def play_random_numbers(user_number):
 
 def main_keyboard():
     return ReplyKeyboardMarkup([
-        ['Image', KeyboardButton('My coordinates', request_location=True)]
+        ['Image', KeyboardButton('My coordinates', request_location=True), 'Fill out a form']
         ])
 
 
