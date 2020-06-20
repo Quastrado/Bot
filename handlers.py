@@ -2,28 +2,30 @@ from glob import glob
 import os
 from random import choice
 
-from utils import get_smile, play_random_numbers, main_keyboard, is_cat
+from db import db, get_or_create_user
+from utils import play_random_numbers, main_keyboard, is_cat
 
 
 def greet_user(update, context):
+    user = get_or_create_user(db, update.effective_user, update.message.chat.id)
     print('Start triggered')
-    context.user_data['emoji'] = get_smile(context.user_data)
     update.message.reply_text(
-        f'Hey!{context.user_data["emoji"]}',
+        f'Hey!{user["emoji"]}',
         reply_markup=main_keyboard()
         )
 
 
 def talk_to_me(update, context):
-    context.user_data['emoji'] = get_smile(context.user_data)
+    user = get_or_create_user(db, update.effective_user, update.message.chat_id)
     text = update.message.text
     print(text)
     update.message.reply_text(
-        f'{text} {context.user_data["emoji"]}',
+        f'{text} {user["emoji"]}',
         reply_markup=main_keyboard())
 
 
 def guess_number(update, context):
+    user = get_or_create_user(db, update.effective_user, update.message.chat_id)
     if context.args:
         try:
             user_number = int(context.args[0])
@@ -39,6 +41,7 @@ def guess_number(update, context):
 
 
 def send_picture(update, context):
+    user = get_or_create_user(db, update.effective_user, update.message.chat_id)
     picture_list = glob('images/pic*.jpg')
     picture = choice(picture_list)
     chat_id = update.effective_chat.id
@@ -50,15 +53,16 @@ def send_picture(update, context):
 
 
 def user_coordinates(update, context):
-    context.user_data['emoji'] = get_smile(context.user_data)
+    user = get_or_create_user(db, update.effective_user, update.message.chat_id)
     coords = update.message.location
     update.message.reply_text(
-        f'Your coordinates {coords} {context.user_data["emoji"]}!',
+        f'Your coordinates {coords} {user["emoji"]}!',
         reply_markup=main_keyboard()
     )
 
 
 def check_user_photo(update, context):
+    user = get_or_create_user(db, update.effective_user, update.message.chat_id)
     update.message.reply_text('Process image')
     os.makedirs('downloads', exist_ok=True)
     user_photo = context.bot.getFile(update.message.photo[-1].file_id)
