@@ -1,17 +1,20 @@
 import logging
 
-from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters
+from telegram.ext import (Updater, CommandHandler,
+                          ConversationHandler, MessageHandler, Filters)
 
-from anketa import (anketa_start, anketa_name, anketa_rating, anketa_comment, anketa_skip,
-                    anketa_dontknow)
+from anketa import (anketa_start, anketa_name, anketa_rating,
+                    anketa_comment, anketa_skip, anketa_dontknow)
 from handlers import (greet_user, guess_number, send_picture, user_coordinates,
-                        talk_to_me, check_user_photo)
+                      talk_to_me, check_user_photo)
 import settings
 
 logging.basicConfig(filename='bot.log', level=logging.INFO)
 
-PROXY = {'proxy_url': settings.PROXY_URL,
-    'urllib3_proxy_kwargs': {'username': settings.PROXY_USERNAME, 'password': settings.PROXY_PASSWORD}}
+PROXY = {'proxy_url': settings.PROXY_URL, 'urllib3_proxy_kwargs': {
+        'username': settings.PROXY_USERNAME,
+        'password': settings.PROXY_PASSWORD}
+        }
 
 
 def main():
@@ -23,14 +26,19 @@ def main():
         ],
         states={
             'name': [MessageHandler(Filters.text, anketa_name)],
-            'rating': [MessageHandler(Filters.regex('^(1|2|3|4|5)$'), anketa_rating)],
+            'rating': [
+                MessageHandler(
+                    Filters.regex('^(1|2|3|4|5)$'), anketa_rating
+                )
+                ],
             'comment': [
                 CommandHandler('skip', anketa_skip),
                 MessageHandler(Filters.text, anketa_comment)
             ]
         },
         fallbacks=[
-            MessageHandler(Filters.text | Filters.photo | Filters.video | Filters.document | Filters.location, anketa_dontknow)
+            MessageHandler(Filters.text | Filters.photo | Filters.video |
+                           Filters.document | Filters.location, anketa_dontknow)
         ]
     )
     dp.add_handler(anketa)
