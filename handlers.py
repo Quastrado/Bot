@@ -2,7 +2,7 @@ from glob import glob
 import os
 from random import choice
 
-from db import db, get_or_create_user
+from db import db, get_or_create_user, subscribe_user, unsubscribe_user
 from utils import play_random_numbers, main_keyboard, is_cat
 
 
@@ -76,3 +76,15 @@ def check_user_photo(update, context):
     else:
         update.message.reply_text('Cat not found')
         os.remove(file_name)
+
+
+def subscribe(update, context):
+    user = get_or_create_user(db, update.effective_user, update.message.chat.id)
+    subscribe_user(db, user)
+    update.message.reply_text('You have successfully subscribed')
+
+
+def unsubscribe(update, context):
+    user = get_or_create_user(db, update.effective_user, update.message.chat.id)
+    unsubscribe_user(db, user)
+    update.message.reply_text('You have successfully unsubscribed')

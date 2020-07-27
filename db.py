@@ -7,8 +7,9 @@ import settings
 
 
 client = MongoClient(settings.MONGO_LINK)
-    
+
 db = client[settings.MONGO_DB]
+
 
 def get_or_create_user(db, effective_user, chat_id):
     user = db.user.find_one({'user_id': effective_user.id})
@@ -28,7 +29,7 @@ def get_or_create_user(db, effective_user, chat_id):
 def save_anketa(db, user_id, anketa_data):
     user = db.users.find_one({'user_id': user_id})
     anketa_data['created'] = datetime.now()
-    if not 'anketa' in user:
+    if 'anketa' not in user:
         db.users.update_one(
             {'_id': user['_id']},
             {'$set': {'anketa': [anketa_data]}}
@@ -38,3 +39,18 @@ def save_anketa(db, user_id, anketa_data):
             {'_id': user['_id']},
             {'$push': {'anketa': anketa_data}}
         )
+
+
+def subscribe_user(db, user_data):
+    if not user_data.get('subscribed'):
+        db.users.update_one(
+            {'_id': user_data['_id']},
+            {'$set': {'subscribed': True}}
+        )
+
+
+def unsubscribe_user(db, user_data):
+    db.users.update_one(
+        {'_id': user_data['_id']},
+        {'$set': {'subscribed': False}}
+    )
