@@ -8,7 +8,7 @@ from anketa import (anketa_start, anketa_name, anketa_rating,
 from handlers import (greet_user, guess_number, send_picture, subscribe,
                       unsubscribe, user_coordinates, talk_to_me,
                       check_user_photo)
-from jobs import send_hello
+from jobs import send_updates
 import settings
 
 logging.basicConfig(filename='bot.log', level=logging.INFO)
@@ -22,7 +22,7 @@ PROXY = {'proxy_url': settings.PROXY_URL, 'urllib3_proxy_kwargs': {
 def main():
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=PROXY)
     jq = mybot.job_queue
-    jq.run_repeating(send_hello, interval=5)
+    jq.run_repeating(send_updates, interval=10, first=0)
     dp = mybot.dispatcher
     anketa = ConversationHandler(
         entry_points=[
