@@ -1,9 +1,12 @@
+from datetime import time
 import logging
+import pytz
 
 from telegram.bot import Bot
 from telegram.ext import (Updater, CommandHandler,
                           ConversationHandler, MessageHandler, Filters)
 from telegram.ext import messagequeue as mq
+from telegram.ext.jobqueue import Days
 from telegram.utils.request import Request
 
 from anketa import (anketa_start, anketa_name, anketa_rating,
@@ -50,7 +53,9 @@ def main():
 
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=PROXY)
     jq = mybot.job_queue
-    #jq.run_repeating(send_updates, interval=10, first=0)
+    target_time = time(12, 0, tzinfo=pytz.timezone('Europe/Moscow'))
+    target_days = (Days.Mon, Days.WED, Days.FRI)
+    jq.run_daily(send_updates, target_time, target_days)
     dp = mybot.dispatcher
     anketa = ConversationHandler(
         entry_points=[
