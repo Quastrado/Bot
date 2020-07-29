@@ -1,7 +1,10 @@
 import logging
 
+from telegram.bot import Bot
 from telegram.ext import (Updater, CommandHandler,
                           ConversationHandler, MessageHandler, Filters)
+from telegram.ext import messagequeue as mq
+from telegram.utils.request import Request
 
 from anketa import (anketa_start, anketa_name, anketa_rating,
                     anketa_comment, anketa_skip, anketa_dontknow)
@@ -19,7 +22,32 @@ PROXY = {'proxy_url': settings.PROXY_URL, 'urllib3_proxy_kwargs': {
         }
 
 
+class MQBot(Bot):
+    def __init__(self, *args, is_queued_def=True, msg_queue=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._is_messages_queued_default = is_queued_def
+        self._msg_queue = msg_queue or mq.MessageQueue()
+
+    def __del__(self):
+        try:
+            self._msg_queue.stop()
+        except:
+            pass
+
+    @mq.queuedmessage
+    def send_message(self, *args, **kwargs):
+        return super().send_message(*args, **kwargs)
+
+
 def main():
+    request = Request(
+        con_pool_size=8,
+        proxy_url=PROXY['proxy_url'],
+        urllib3_proxy_kwargs=PROXY['urllib3_proxy_kwargs']
+    )
+    bot = MQBot(settings.API_KEY, request=request)
+    mybot = Updater(bot=bot, use_context=True)
+
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=PROXY)
     jq = mybot.job_queue
     jq.run_repeating(send_updates, interval=10, first=0)
