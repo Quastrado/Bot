@@ -8,8 +8,8 @@ from telegram.utils.request import Request
 
 from anketa import (anketa_start, anketa_name, anketa_rating,
                     anketa_comment, anketa_skip, anketa_dontknow)
-from handlers import (greet_user, guess_number, send_picture, subscribe,
-                      unsubscribe, user_coordinates, talk_to_me,
+from handlers import (greet_user, guess_number, send_picture, set_alarm, 
+                      subscribe, unsubscribe, user_coordinates, talk_to_me,
                       check_user_photo)
 from jobs import send_updates
 import settings
@@ -50,7 +50,7 @@ def main():
 
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=PROXY)
     jq = mybot.job_queue
-    jq.run_repeating(send_updates, interval=10, first=0)
+    #jq.run_repeating(send_updates, interval=10, first=0)
     dp = mybot.dispatcher
     anketa = ConversationHandler(
         entry_points=[
@@ -79,6 +79,7 @@ def main():
     dp.add_handler(CommandHandler('pic', send_picture))
     dp.add_handler(CommandHandler('subscribe', subscribe))
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
+    dp.add_handler(CommandHandler('alarm', set_alarm))
     dp.add_handler(MessageHandler(Filters.regex('^(Image)$'), send_picture))
     dp.add_handler(MessageHandler(Filters.photo, check_user_photo))
     dp.add_handler(MessageHandler(Filters.location, user_coordinates))

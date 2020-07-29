@@ -12,3 +12,7 @@ def send_updates(context):
             context.bot.send_message(chat_id=555825427, text=f'Exact time: {now}')
         except BadRequest:
             print(f"Chat {user['chat_id']} not found")
+
+
+def alarm(context):
+    context.bot.send_message(chat_id=context.job.context, text="The alarm went off")
