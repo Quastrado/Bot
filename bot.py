@@ -3,7 +3,7 @@ import logging
 import pytz
 
 from telegram.bot import Bot
-from telegram.ext import (Updater, CommandHandler,
+from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler,
                           ConversationHandler, MessageHandler, Filters)
 from telegram.ext import messagequeue as mq
 from telegram.ext.jobqueue import Days
@@ -13,7 +13,7 @@ from anketa import (anketa_start, anketa_name, anketa_rating,
                     anketa_comment, anketa_skip, anketa_dontknow)
 from handlers import (greet_user, guess_number, send_picture, set_alarm, 
                       subscribe, unsubscribe, user_coordinates, talk_to_me,
-                      check_user_photo)
+                      cat_picture_rating, check_user_photo)
 from jobs import send_updates
 import settings
 
@@ -54,7 +54,7 @@ def main():
     mybot = Updater(settings.API_KEY, use_context=True, request_kwargs=PROXY)
     jq = mybot.job_queue
     target_time = time(12, 0, tzinfo=pytz.timezone('Europe/Moscow'))
-    target_days = (Days.Mon, Days.WED, Days.FRI)
+    target_days = (Days.MON, Days.WED, Days.FRI)
     jq.run_daily(send_updates, target_time, target_days)
     dp = mybot.dispatcher
     anketa = ConversationHandler(
@@ -85,6 +85,7 @@ def main():
     dp.add_handler(CommandHandler('subscribe', subscribe))
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
     dp.add_handler(CommandHandler('alarm', set_alarm))
+    dp.add_handler(CallbackQueryHandler(cat_picture_rating, pattern="^(rating|)"))
     dp.add_handler(MessageHandler(Filters.regex('^(Image)$'), send_picture))
     dp.add_handler(MessageHandler(Filters.photo, check_user_photo))
     dp.add_handler(MessageHandler(Filters.location, user_coordinates))

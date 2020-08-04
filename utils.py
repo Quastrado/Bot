@@ -2,7 +2,7 @@ from pprint import PrettyPrinter
 from random import randint
 
 from clarifai.rest import ClarifaiApp 
-from telegram import ReplyKeyboardMarkup, KeyboardButton
+from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
 import settings
 
@@ -33,6 +33,17 @@ def is_cat(file_name):
             if concept['name'] == 'cat':
                 return True
     return False
+
+
+def cat_rating_inline_keyboard(image_name):
+    callback_text = f"rating|{image_name}|"
+    keyboard = [
+        [
+            InlineKeyboardButton('Like', callback_data='1'),
+            InlineKeyboardButton('Dislike', callback_data='-1')
+        ]
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
 
 if __name__ == '__main__':

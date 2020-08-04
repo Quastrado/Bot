@@ -4,7 +4,7 @@ from random import choice
 
 from db import db, get_or_create_user, subscribe_user, unsubscribe_user
 from jobs import alarm
-from utils import play_random_numbers, main_keyboard, is_cat
+from utils import play_random_numbers, main_keyboard, is_cat, cat_rating_inline_keyboard
 
 
 def greet_user(update, context):
@@ -49,8 +49,8 @@ def send_picture(update, context):
     context.bot.send_photo(
         chat_id=chat_id,
         photo=open(picture, 'rb'),
-        reply_markup=main_keyboard()
-        )
+        reply_markup=cat_rating_inline_keyboard(picture)
+    )
 
 
 def user_coordinates(update, context):
@@ -97,3 +97,9 @@ def set_alarm(update, context):
         update.message.reply_text(f'Notification after {alarm_seconds} seconds')
     except (ValueError, TypeError):
         update.message.reply_text(f'Enter an integer number of seconds after the command')
+
+
+def cat_picture_rating(update, context):
+    update.callback_query.answer()
+    text = f"Your choice: {update.callback_query.data}"
+    update.callback_query.edit_message_caption(caption=text)
