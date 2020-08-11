@@ -78,3 +78,29 @@ def user_voted(db, image_name, user_id):
     if db.images.find_one({"image_name": image_name, "votes.user_id": user_id}):
         return True
     return False
+
+
+def get_image_rating(db, image_name):
+    rating = db.images.aggregate([
+        {
+            '$match': {
+                'image_name': image_name
+            }
+        }, {
+            '$unwind': {
+                'path': '$votes'
+            }
+        }, {
+            '$group': {
+                '_id': '$image_name', 
+                'rating': {
+                    '$sum': '$votes.user_vote'
+                }
+            }
+        }
+    ])
+    rating = next(rating, None)
+    if rating:
+        return rating['rating']
+    return 0
+    

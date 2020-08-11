@@ -3,7 +3,8 @@ import os
 from random import choice
 
 from db import (db, get_or_create_user, subscribe_user,
-                unsubscribe_user, save_cat_image_vote, user_voted)
+                unsubscribe_user, save_cat_image_vote, user_voted, 
+                get_image_rating)
 from jobs import alarm
 from utils import (play_random_numbers, main_keyboard, is_cat,
                    cat_rating_inline_keyboard)
@@ -49,8 +50,9 @@ def send_picture(update, context):
     picture = choice(picture_list)
     chat_id = update.effective_chat.id
     if user_voted(db, picture, user['user_id']):
+        rating = get_image_rating(db, picture)
         keyboard = None
-        caption = "You have already voted"
+        caption = f"Picture rating - {rating}"
     else:
         keyboard = cat_rating_inline_keyboard(picture)
         caption = None
@@ -115,4 +117,5 @@ def cat_picture_rating(update, context):
     user_data = get_or_create_user(db, update.effective_user,
                                    update.effective_chat.id)
     save_cat_image_vote(db, user_data, image_name, vote)
-    update.callback_query.edit_message_caption(caption="Thanks")
+    rating = get_image_rating(db, image_name)
+    update.callback_query.edit_message_caption(caption=f"Rating - {rating}")
