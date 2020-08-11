@@ -58,3 +58,23 @@ def unsubscribe_user(db, user_data):
 def get_subscribed(db):
     return db.users.find({"subscribed": True})
     
+
+def save_cat_image_vote(db, user_data, image_name, vote):
+    image = db.image.find_one({"image_name": image_name})
+    if not image:
+        image = {
+            "image_name": image_name,
+            "votes": [{"user_id": user_data["user_id"], "user_vote": vote}]
+        }
+        db.images.insert_one(image)
+    elif not user_voted(db, image_name, user_data["user_id"]):
+        db.images.update_one(
+            {"image_name": image_name},
+            {"$push": {"votes": {"user_id": user_data["user_id"], "vote": vote}}}
+        )
+
+
+def user_voted(db, image_name, user_id):
+    if db.images.find_one({"image_name": image_name, "votes.user_id": user_id}):
+        return True
+    return False

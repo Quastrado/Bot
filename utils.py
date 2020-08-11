@@ -39,8 +39,8 @@ def cat_rating_inline_keyboard(image_name):
     callback_text = f"rating|{image_name}|"
     keyboard = [
         [
-            InlineKeyboardButton('Like', callback_data='1'),
-            InlineKeyboardButton('Dislike', callback_data='-1')
+            InlineKeyboardButton('Like', callback_data=callback_text + '1'),
+            InlineKeyboardButton('Dislike', callback_data=callback_text + '-1')
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
