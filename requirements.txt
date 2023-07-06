@@ -10,7 +10,7 @@ emoji==0.5.4
 flake8==3.8.3
 future==0.18.2
 googleapis-common-protos==1.52.0
-grpcio==1.29.0
+grpcio==1.53.0
 idna==2.9
 importlib-metadata==1.6.1
 jsonschema==2.6.0
