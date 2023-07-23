@@ -8,7 +8,7 @@ decorator==4.4.2
 dnspython==1.16.0
 emoji==0.5.4
 flake8==3.8.3
-future==0.18.2
+future==0.18.3
 googleapis-common-protos==1.52.0
 grpcio==1.29.0
 idna==2.9
